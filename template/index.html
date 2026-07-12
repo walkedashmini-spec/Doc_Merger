@@ -1,65 +1,1357 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF Merger</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+/* PDF Merger � Design System */
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+:root {
+  --bg: #0F172A;
+  --card: #1E293B;
+  --card-hover: #253449;
+  --primary: #3B82F6;
+  --primary-hover: #2563EB;
+  --primary-glow: rgba(59, 130, 246, 0.4);
+  --success: #22C55E;
+  --success-glow: rgba(34, 197, 94, 0.3);
+  --danger: #EF4444;
+  --danger-bg: rgba(239, 68, 68, 0.12);
+  --text: #F8FAFC;
+  --muted: #94A3B8;
+  --border: rgba(148, 163, 184, 0.15);
+  --glass: rgba(30, 41, 59, 0.7);
+  --radius: 14px;
+  --radius-lg: 20px;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.35);
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Poppins', 'Inter', sans-serif;
+  --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
 
-    <title>PDF Merger</title>
-  </head>
-  <body class="bg-dark text-white">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">PDF Merger</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
-      </li>
-      <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-          Dropdown
-        </a>
-        <div class="dropdown-menu">
-          <a class="dropdown-item" href="#">Action</a>
-          <a class="dropdown-item" href="#">Another action</a>
-          <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="#">Something else here</a>
-        </div>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link disabled">Disabled</a>
-      </li>
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, rgba(59, 130, 246, 0.15), transparent),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(59, 130, 246, 0.08), transparent);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ?? Navbar ?? */
+
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--border);
+}
+
+.navbar-brand {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.navbar-brand span {
+  font-size: 1.3rem;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  list-style: none;
+}
+
+.nav-links a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+
+.nav-links a:hover {
+  color: var(--text);
+}
+
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem;
+}
+
+/* ?? Layout ?? */
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ?? Hero ?? */
+
+.hero {
+  text-align: center;
+  padding: 3.5rem 0 2rem;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.hero h1 {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(135deg, var(--text) 0%, var(--muted) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 1.05rem;
+  max-width: 420px;
+  margin: 0 auto;
+}
+
+/* ?? Cards ?? */
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 2rem;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+/* ?? Upload Zone ?? */
+
+.drop-zone {
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  padding: 3rem 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.drop-zone::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.05), transparent);
+  opacity: 0;
+  transition: opacity var(--transition);
+}
+
+.drop-zone:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  background: rgba(59, 130, 246, 0.03);
+}
+
+.drop-zone:hover::before {
+  opacity: 1;
+}
+
+.drop-zone.drag-over {
+  border-color: var(--primary);
+  box-shadow: 0 0 24px var(--primary-glow), inset 0 0 30px rgba(59, 130, 246, 0.05);
+  animation: borderPulse 1.2s ease-in-out infinite;
+}
+
+.drop-zone.drag-over::before {
+  opacity: 1;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(59, 130, 246, 0.02));
+}
+
+.drop-zone-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1.25rem;
+  background: rgba(59, 130, 246, 0.12);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform var(--transition);
+}
+
+.drop-zone:hover .drop-zone-icon,
+.drop-zone.drag-over .drop-zone-icon {
+  transform: translateY(-4px);
+}
+
+.drop-zone-icon svg {
+  width: 28px;
+  height: 28px;
+  color: var(--primary);
+}
+
+.drop-zone h3 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.drop-zone p {
+  color: var(--muted);
+  font-size: 0.875rem;
+}
+
+.drop-zone .browse-link {
+  color: var(--primary);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.drop-zone input[type="file"] {
+  display: none;
+}
+
+/* ?? File List ?? */
+
+.file-list {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.file-list:empty {
+  display: none;
+}
+
+.file-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.25rem;
+}
+
+.file-list-header span {
+  font-size: 0.8rem;
+  color: var(--muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.file-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.875rem 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  cursor: grab;
+  transition: all var(--transition);
+  animation: fadeInUp 0.3s ease-out;
+}
+
+.file-card:hover {
+  border-color: rgba(59, 130, 246, 0.3);
+  background: var(--card-hover);
+}
+
+.file-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.file-card.drag-over-card {
+  border-color: var(--primary);
+  box-shadow: 0 0 12px var(--primary-glow);
+}
+
+.file-card-icon {
+  width: 40px;
+  height: 40px;
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.file-card-icon svg {
+  width: 20px;
+  height: 20px;
+  color: var(--danger);
+}
+
+.file-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.file-card-name {
+  font-weight: 500;
+  font-size: 0.9rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-card-size {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.file-card-drag {
+  color: var(--muted);
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.file-card-remove {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.4rem;
+  border-radius: 8px;
+  transition: all var(--transition);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-card-remove:hover {
+  color: var(--danger);
+  background: var(--danger-bg);
+}
+
+.file-card-remove svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* ?? Buttons ?? */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 0.875rem 1.75rem;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), #2563EB);
+  color: white;
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.35);
+  width: 100%;
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+  padding: 1rem 2rem;
+}
+
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(59, 130, 246, 0.45);
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.btn-secondary {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover:not(:disabled) {
+  border-color: var(--muted);
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--success), #16A34A);
+  color: white;
+  box-shadow: 0 4px 16px var(--success-glow);
+}
+
+.btn-success:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px var(--success-glow);
+}
+
+.btn-success:disabled,
+.btn-expired {
+  background: var(--card-hover);
+  color: var(--muted);
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+/* ?? Loading Overlay ?? */
+
+.loading-overlay {
+  display: none;
+  text-align: center;
+  padding: 2rem 0;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+.loading-overlay.active {
+  display: block;
+}
+
+.loading-overlay h3 {
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+  margin-bottom: 1.5rem;
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  width: 40%;
+  background: linear-gradient(90deg, var(--primary), #60A5FA, var(--primary));
+  background-size: 200% 100%;
+  border-radius: 3px;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.loading-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+
+.loading-dots span {
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+/* ?? Success Section ?? */
+
+.success-section {
+  display: none;
+  text-align: center;
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.success-section.active {
+  display: block;
+}
+
+.success-icon {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  background: rgba(34, 197, 94, 0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: successPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.success-icon svg {
+  width: 40px;
+  height: 40px;
+  color: var(--success);
+  stroke-dasharray: 50;
+  stroke-dashoffset: 50;
+  animation: checkDraw 0.5s ease-out 0.3s forwards;
+}
+
+.success-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.success-section .success-message {
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+}
+
+.expiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(239, 68, 68, 0.1);
+  color: #FCA5A5;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.4rem 0.875rem;
+  border-radius: 100px;
+  margin-bottom: 1.75rem;
+}
+
+.countdown {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 1.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.countdown.expired {
+  color: var(--danger);
+}
+
+.download-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.download-card-icon {
+  width: 48px;
+  height: 48px;
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.download-card-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--danger);
+}
+
+.download-card-info h4 {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.download-card-info p {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.download-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.download-actions .btn {
+  flex: 1;
+}
+
+.expired-message {
+  display: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem;
+  background: var(--danger-bg);
+  border-radius: var(--radius);
+}
+
+.expired-message.active {
+  display: block;
+  animation: fadeInUp 0.3s ease-out;
+}
+
+/* ?? Error Cards ?? */
+
+.error-container {
+  position: fixed;
+  top: 5rem;
+  right: 1.5rem;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  max-width: 380px;
+  width: calc(100% - 3rem);
+}
+
+.error-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  background: var(--card);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  animation: slideInRight 0.35s ease-out;
+}
+
+.error-card-icon {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  color: var(--danger);
+}
+
+.error-card-content {
+  flex: 1;
+}
+
+.error-card-content h4 {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.15rem;
+}
+
+.error-card-content p {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.error-card-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.2rem;
+  flex-shrink: 0;
+  transition: color var(--transition);
+}
+
+.error-card-close:hover {
+  color: var(--text);
+}
+
+/* ?? About ?? */
+
+.about {
+  padding: 4rem 0 2rem;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.about h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.about p {
+  color: var(--muted);
+  max-width: 520px;
+  margin: 0 auto;
+  font-size: 0.95rem;
+}
+
+/* ?? Footer ?? */
+
+.footer {
+  text-align: center;
+  padding: 2rem 1.5rem 2.5rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ?? Utility ?? */
+
+.hidden {
+  display: none !important;
+}
+
+.upload-section.hidden-section {
+  display: none;
+}
+
+/* ?? Animations ?? */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes borderPulse {
+  0%, 100% { box-shadow: 0 0 24px var(--primary-glow); }
+  50% { box-shadow: 0 0 36px rgba(59, 130, 246, 0.6); }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); background-position: 200% 0; }
+  100% { transform: translateX(250%); background-position: -200% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes successPop {
+  0% { transform: scale(0); opacity: 0; }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes checkDraw {
+  to { stroke-dashoffset: 0; }
+}
+
+/* ?? Responsive ?? */
+
+@media (max-width: 768px) {
+  .navbar {
+    padding: 0.875rem 1.25rem;
+  }
+
+  .nav-toggle {
+    display: block;
+  }
+
+  .nav-links {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    flex-direction: column;
+    gap: 0;
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 0.5rem 0;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links li {
+    width: 100%;
+  }
+
+  .nav-links a {
+    display: block;
+    padding: 0.75rem 1.25rem;
+  }
+
+  .hero {
+    padding: 2.5rem 0 1.5rem;
+  }
+
+  .card {
+    padding: 1.5rem;
+  }
+
+  .drop-zone {
+    padding: 2rem 1.25rem;
+  }
+
+  .download-actions {
+    flex-direction: column;
+  }
+
+  .download-actions .btn {
+    width: 100%;
+  }
+
+  .error-container {
+    right: 1rem;
+    left: 1rem;
+    width: auto;
+    max-width: none;
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <nav class="navbar">
+    <a href="#hero" class="navbar-brand"><span>&#128196;</span> PDF Merger</a>
+    <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">&#9776;</button>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="#hero">Home</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#" target="_blank" rel="noopener">GitHub</a></li>
     </ul>
-    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>
-  </div>
-</nav>
-    <h1>PDF Merger</h1>
+  </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct" crossorigin="anonymous"></script>
+  <div id="error-container" class="error-container"></div>
 
-    <div class="container my-3">
-       <form  action="/merge" method="post" enctype="multipart/form-data">
-  <div class="form-group">
-    <label for="exampleFormControlFile1">Example file input</label>
-    <input type="file" name="pdfs" class="form-control-file" id="exampleFormControlFile1" multiple accept=".pdf">
-    <input type="submit" value="submit" class="btn btn-primary my-4">
-  </div>
-</form>
-    </div>
+  <main class="container">
+    <section class="hero" id="hero">
+      <h1>Merge PDF Files</h1>
+      <p>Combine multiple PDF documents into one file in seconds.</p>
+    </section>
 
-  </body>
+    <section class="card" id="main-card">
+      <div id="upload-section" class="upload-section">
+        <div class="drop-zone" id="drop-zone">
+          <div class="drop-zone-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+          </div>
+          <h3>Drag &amp; drop your PDFs here</h3>
+          <p>or <span class="browse-link">click to browse</span> &mdash; up to 10 files</p>
+          <input type="file" id="file-input" name="pdfs" multiple accept=".pdf,application/pdf">
+        </div>
+
+        <div class="file-list" id="file-list"></div>
+
+        <button class="btn btn-primary" id="merge-btn" disabled>Merge PDFs</button>
+      </div>
+
+      <div class="loading-overlay" id="loading-state">
+        <h3>Merging your PDFs...</h3>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill"></div>
+        </div>
+        <div class="loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+      </div>
+
+      <div class="success-section" id="success-section">
+        <div class="success-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+        </div>
+        <h2>Your PDF is Ready!</h2>
+        <p class="success-message">Your merged PDF has been successfully generated.</p>
+        <div class="expiry-badge">&#9201; This download link expires in 5 minutes</div>
+        <div class="countdown" id="countdown">05:00</div>
+
+        <div class="download-card">
+          <div class="download-card-icon">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4z"/></svg>
+          </div>
+          <div class="download-card-info">
+            <h4>Secure Download Link</h4>
+            <p>Your merged PDF is ready for download</p>
+          </div>
+        </div>
+
+        <div class="download-actions">
+          <a class="btn btn-success" id="download-btn" href="#" target="_blank" rel="noopener">Download PDF</a>
+          <button class="btn btn-secondary" id="copy-btn">Copy Link</button>
+        </div>
+
+        <p class="expired-message" id="expired-message">This temporary download link has expired. Please merge your PDFs again.</p>
+
+        <button class="btn btn-secondary" id="reset-btn" style="width:100%">Merge Another PDF</button>
+      </div>
+    </section>
+
+    <section class="about" id="about">
+      <h2>About PDF Merger</h2>
+      <p>A fast, secure tool to combine multiple PDF documents into a single file. Upload up to 10 PDFs, arrange them in order, and download your merged document instantly.</p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    Made with &#10084;&#65039; using Node.js, Express &amp; AWS S3
+  </footer>
+
+  <script>
+(function () {
+  'use strict';
+
+  const MAX_FILES = 10;
+  const COUNTDOWN_SECONDS = 300;
+
+  const state = {
+    files: [],
+    signedUrl: null,
+    countdownInterval: null,
+    countdownRemaining: COUNTDOWN_SECONDS,
+    dragSrcIndex: null,
+  };
+
+  const $ = (sel) => document.querySelector(sel);
+
+  const dropZone = $('#drop-zone');
+  const fileInput = $('#file-input');
+  const fileList = $('#file-list');
+  const mergeBtn = $('#merge-btn');
+  const uploadSection = $('#upload-section');
+  const loadingOverlay = $('#loading-state');
+  const successSection = $('#success-section');
+  const errorContainer = $('#error-container');
+  const countdownEl = $('#countdown');
+  const downloadBtn = $('#download-btn');
+  const copyBtn = $('#copy-btn');
+  const resetBtn = $('#reset-btn');
+  const expiredMessage = $('#expired-message');
+
+  /* ?? Helpers ?? */
+
+  function formatSize(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+  }
+
+  function isPdf(file) {
+    return file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+  }
+
+  function formatCountdown(seconds) {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+  }
+
+  /* ?? Error Cards ?? */
+
+  function showError(title, message) {
+    const card = document.createElement('div');
+    card.className = 'error-card';
+    card.innerHTML =
+      '<div class="error-card-icon">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+          '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>' +
+        '</svg>' +
+      '</div>' +
+      '<div class="error-card-content">' +
+        '<h4>' + title + '</h4>' +
+        '<p>' + message + '</p>' +
+      '</div>' +
+      '<button class="error-card-close" aria-label="Dismiss">&times;</button>';
+
+    card.querySelector('.error-card-close').addEventListener('click', () => card.remove());
+    errorContainer.appendChild(card);
+
+    setTimeout(() => {
+      if (card.parentNode) card.remove();
+    }, 5000);
+  }
+
+  /* ?? File Management ?? */
+
+  function addFiles(newFiles) {
+    const incoming = Array.from(newFiles);
+    const nonPdf = incoming.filter((f) => !isPdf(f));
+    if (nonPdf.length) {
+      showError('Invalid file type', 'Only PDF files are allowed. Please select PDF documents only.');
+      return;
+    }
+
+    const pdfFiles = incoming.filter(isPdf);
+    const total = state.files.length + pdfFiles.length;
+
+    if (total > MAX_FILES) {
+      showError('Too many files', 'Maximum 10 files allowed. Please remove some files before adding more.');
+      return;
+    }
+
+    pdfFiles.forEach((file) => {
+      const duplicate = state.files.some(
+        (f) => f.name === file.name && f.size === file.size
+      );
+      if (!duplicate) state.files.push(file);
+    });
+
+    renderFileList();
+    updateMergeButton();
+  }
+
+  function removeFile(index) {
+    state.files.splice(index, 1);
+    renderFileList();
+    updateMergeButton();
+  }
+
+  function updateMergeButton() {
+    mergeBtn.disabled = state.files.length < 2;
+  }
+
+  function renderFileList() {
+    fileList.innerHTML = '';
+
+    if (state.files.length === 0) return;
+
+    const header = document.createElement('div');
+    header.className = 'file-list-header';
+    header.innerHTML =
+      '<span>Selected files (' + state.files.length + '/' + MAX_FILES + ')</span>' +
+      '<span>Drag to reorder</span>';
+    fileList.appendChild(header);
+
+    state.files.forEach((file, index) => {
+      const card = document.createElement('div');
+      card.className = 'file-card';
+      card.draggable = true;
+      card.dataset.index = index;
+
+      card.innerHTML =
+        '<div class="file-card-icon">' +
+          '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM8 12h8v2H8v-2zm0 4h8v2H8v-2z"/></svg>' +
+        '</div>' +
+        '<div class="file-card-info">' +
+          '<div class="file-card-name">' + escapeHtml(file.name) + '</div>' +
+          '<div class="file-card-size">' + formatSize(file.size) + '</div>' +
+        '</div>' +
+        '<div class="file-card-drag">' +
+          '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="9" cy="6" r="1.5"/><circle cx="15" cy="6" r="1.5"/><circle cx="9" cy="12" r="1.5"/><circle cx="15" cy="12" r="1.5"/><circle cx="9" cy="18" r="1.5"/><circle cx="15" cy="18" r="1.5"/></svg>' +
+        '</div>' +
+        '<button class="file-card-remove" aria-label="Remove file" data-index="' + index + '">' +
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+        '</button>';
+
+      card.addEventListener('dragstart', onCardDragStart);
+      card.addEventListener('dragend', onCardDragEnd);
+      card.addEventListener('dragover', onCardDragOver);
+      card.addEventListener('dragleave', onCardDragLeave);
+      card.addEventListener('drop', onCardDrop);
+
+      card.querySelector('.file-card-remove').addEventListener('click', (e) => {
+        e.stopPropagation();
+        removeFile(parseInt(e.currentTarget.dataset.index, 10));
+      });
+
+      fileList.appendChild(card);
+    });
+  }
+
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  /* ?? File Card Reorder ?? */
+
+  function onCardDragStart(e) {
+    state.dragSrcIndex = parseInt(e.currentTarget.dataset.index, 10);
+    e.currentTarget.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+    e.dataTransfer.setData('text/plain', state.dragSrcIndex);
+  }
+
+  function onCardDragEnd(e) {
+    e.currentTarget.classList.remove('dragging');
+    document.querySelectorAll('.file-card').forEach((c) => c.classList.remove('drag-over-card'));
+    state.dragSrcIndex = null;
+  }
+
+  function onCardDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    const card = e.currentTarget;
+    if (card.classList.contains('file-card')) {
+      card.classList.add('drag-over-card');
+    }
+  }
+
+  function onCardDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over-card');
+  }
+
+  function onCardDrop(e) {
+    e.preventDefault();
+    const targetIndex = parseInt(e.currentTarget.dataset.index, 10);
+    const srcIndex = state.dragSrcIndex;
+
+    if (srcIndex === null || srcIndex === targetIndex) return;
+
+    const moved = state.files.splice(srcIndex, 1)[0];
+    state.files.splice(targetIndex, 0, moved);
+    renderFileList();
+  }
+
+  /* ?? Drop Zone Events ?? */
+
+  dropZone.addEventListener('click', () => fileInput.click());
+
+  fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length) addFiles(e.target.files);
+    fileInput.value = '';
+  });
+
+  dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.classList.add('drag-over');
+  });
+
+  dropZone.addEventListener('dragleave', (e) => {
+    if (!dropZone.contains(e.relatedTarget)) {
+      dropZone.classList.remove('drag-over');
+    }
+  });
+
+  dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    if (e.dataTransfer.files.length) addFiles(e.dataTransfer.files);
+  });
+
+  /* ?? Merge Flow ?? */
+
+  async function mergePdfs() {
+    if (state.files.length < 2) return;
+
+    setMergingState(true);
+
+    const formData = new FormData();
+    state.files.forEach((file) => formData.append('pdfs', file));
+
+    try {
+      const res = await fetch('/merge', { method: 'POST', body: formData });
+      const html = await res.text();
+
+      if (!res.ok) {
+        showError('Upload failed', 'Something went wrong while merging your PDFs. Please try again.');
+        setMergingState(false);
+        return;
+      }
+
+      const match = html.match(/href="([^"]+)"/);
+      if (!match) {
+        showError('Something went wrong', 'Could not retrieve the download link. Please try again.');
+        setMergingState(false);
+        return;
+      }
+
+      state.signedUrl = match[1];
+      showSuccess();
+    } catch (err) {
+      showError('Network error', 'Unable to connect to the server. Check your connection and try again.');
+      setMergingState(false);
+    }
+  }
+
+  function setMergingState(active) {
+    if (active) {
+      uploadSection.classList.add('hidden-section');
+      loadingOverlay.classList.add('active');
+      mergeBtn.disabled = true;
+      mergeBtn.innerHTML = '<span class="btn-spinner"></span> Merging...';
+    } else {
+      uploadSection.classList.remove('hidden-section');
+      loadingOverlay.classList.remove('active');
+      mergeBtn.disabled = state.files.length < 2;
+      mergeBtn.innerHTML = 'Merge PDFs';
+    }
+  }
+
+  function showSuccess() {
+    loadingOverlay.classList.remove('active');
+    successSection.classList.add('active');
+
+    downloadBtn.href = state.signedUrl;
+    downloadBtn.classList.remove('btn-expired');
+    downloadBtn.disabled = false;
+    downloadBtn.textContent = 'Download PDF';
+    copyBtn.disabled = false;
+    expiredMessage.classList.remove('active');
+
+    state.countdownRemaining = COUNTDOWN_SECONDS;
+    countdownEl.textContent = formatCountdown(state.countdownRemaining);
+    countdownEl.classList.remove('expired');
+
+    if (state.countdownInterval) clearInterval(state.countdownInterval);
+    state.countdownInterval = setInterval(tickCountdown, 1000);
+  }
+
+  function tickCountdown() {
+    state.countdownRemaining--;
+    countdownEl.textContent = formatCountdown(state.countdownRemaining);
+
+    if (state.countdownRemaining <= 0) {
+      clearInterval(state.countdownInterval);
+      state.countdownInterval = null;
+      countdownEl.textContent = '00:00';
+      countdownEl.classList.add('expired');
+
+      downloadBtn.disabled = true;
+      downloadBtn.removeAttribute('href');
+      downloadBtn.classList.add('btn-expired');
+      downloadBtn.textContent = 'Link Expired';
+      copyBtn.disabled = true;
+      expiredMessage.classList.add('active');
+    }
+  }
+
+  /* ?? Download / Copy / Reset ?? */
+
+  copyBtn.addEventListener('click', async () => {
+    if (!state.signedUrl || state.countdownRemaining <= 0) return;
+    try {
+      await navigator.clipboard.writeText(state.signedUrl);
+      const original = copyBtn.textContent;
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = original; }, 2000);
+    } catch {
+      showError('Copy failed', 'Unable to copy the link. Please copy it manually from the download button.');
+    }
+  });
+
+  resetBtn.addEventListener('click', resetApp);
+
+  function resetApp() {
+    if (state.countdownInterval) {
+      clearInterval(state.countdownInterval);
+      state.countdownInterval = null;
+    }
+
+    state.files = [];
+    state.signedUrl = null;
+    state.countdownRemaining = COUNTDOWN_SECONDS;
+
+    renderFileList();
+    updateMergeButton();
+
+    successSection.classList.remove('active');
+    uploadSection.classList.remove('hidden-section');
+    loadingOverlay.classList.remove('active');
+
+    mergeBtn.disabled = true;
+    mergeBtn.innerHTML = 'Merge PDFs';
+
+    countdownEl.classList.remove('expired');
+    expiredMessage.classList.remove('active');
+    downloadBtn.classList.remove('btn-expired');
+    copyBtn.disabled = false;
+    fileInput.value = '';
+  }
+
+  mergeBtn.addEventListener('click', mergePdfs);
+
+  /* ?? Mobile Nav Toggle ?? */
+
+  const navToggle = $('#nav-toggle');
+  const navLinks = $('#nav-links');
+
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('open');
+    });
+
+    navLinks.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'));
+    });
+  }
+})();
+
+  </script>
+</body>
 </html>
