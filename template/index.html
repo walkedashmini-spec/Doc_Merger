@@ -1215,7 +1215,7 @@ body::before {
     state.files.forEach((file) => formData.append('pdfs', file));
 
     try {
-      const res = await fetch('/api/merge', { method: 'POST', body: formData });
+      const res = await fetch('/merge', { method: 'POST', body: formData });
       const html = await res.text();
 
       if (!res.ok) {
@@ -1354,4 +1354,10 @@ body::before {
 
   </script>
 </body>
+btn-primary my-4">
+  </div>
+</form>
+    </div>
+
+  </body>
 </html>
