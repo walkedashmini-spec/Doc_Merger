@@ -33,11 +33,24 @@ app.get('/', (req, res) => {
 })
 app.post('/merge', upload.array('pdfs', 10), async (req, res, next) =>{
   try{
+     console.log("1. Route entered");
+
  let filePaths = req.files.map(f => path.resolve(f.path));
 
+console.log("2. Files:", filePaths);
+for (const p of filePaths) {
+      console.log(`Exists? ${p}:`, fs.existsSync(p));
+    }
+
+    console.log("3. Calling mergePdfs...");
  // let d=await  mergePdfs(path.join(__dirname,req.files[0].path),path.join(__dirname,req.files[1].path),path.join(__dirname,req.files[2].path))
   let d= await mergePdfs(filePaths)
+
+   console.log("4. mergePdfs finished:", d);
+
  let mergedFilePath = `public/${d}.pdf`;
+
+ console.log("5. Uploading to S3...");
 
  // upload merged PDF to S3
   await uploadToS3(mergedFilePath, `${d}.pdf`);
@@ -48,6 +61,9 @@ app.post('/merge', upload.array('pdfs', 10), async (req, res, next) =>{
     Key: `${d}.pdf`,
     Expires: 300 // seconds (5 minutes)
   };
+
+   console.log("7. Cleaning up");
+
   const signedUrl = s3.getSignedUrl('getObject', params);
 
   // optional: delete local file after upload
@@ -55,6 +71,8 @@ app.post('/merge', upload.array('pdfs', 10), async (req, res, next) =>{
    req.files.forEach(f => {
   fs.unlinkSync(f.path);      // removes the temp file from uploads/
 });
+
+console.log("8. Sending response");
  // delete uploaded originals
   // respond with signed URL
   res.send(`Download your merged PDF: <a href="${signedUrl}">${signedUrl}</a>`);
