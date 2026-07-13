@@ -85,7 +85,15 @@ catch(err)
 
 });
 
+app.use((err, req, res, next) => {
+  console.error("MIDDLEWARE ERROR:", err);
 
+  if (err instanceof multer.MulterError) {
+    return res.status(400).send(`Multer Error: ${err.message}`);
+  }
+
+  res.status(500).send(err.stack || err.message);
+});
 
 app.listen(port, () => {
   console.log(`Example app listening on port http://localhost:${port}`)
