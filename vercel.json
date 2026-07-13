@@ -5,7 +5,7 @@
     { "src": "template/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/merge", "dest": "/server.js" },
+    { "src": "/merge", "dest": "/server.js" },
     { "src": "/(.*)", "dest": "/template/index.html" }
   ]
 }
