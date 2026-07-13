@@ -7,7 +7,7 @@ const AWS = require('aws-sdk');
 const {mergePdfs}  = require('./testPdf')
 const upload = multer({ dest: 'uploads/' })
 const app = express()
-const port = 3000
+const port = process.env.PORT || 3000;
 
 AWS.config.update({
   accessKeyId: process.env.AWS_ACCESS_KEY_ID,
